@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - UniRecord</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="login-body">
+    <button class="theme-toggle theme-toggle-login" id="themeToggle" title="Toggle Theme"><i class="fas fa-moon"></i></button>
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <i class="fas fa-user-plus"></i>
+                <h2>UniRecord Sign Up</h2>
+                <p>Create an account to access your dashboard</p>
+            </div>
+            <form action="loggin.html" class="login-form">
+                <div class="input-group">
+                    <i class="fas fa-user input-icon"></i>
+                    <input type="text" id="fullname" placeholder="Full Name" required>
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-id-badge input-icon"></i>
+                    <input type="text" id="studentid" placeholder="Student ID" required>
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-envelope input-icon"></i>
+                    <input type="email" id="email" placeholder="Email Address" required>
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-lock input-icon"></i>
+                    <input type="password" id="password" placeholder="Password" required>
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-lock input-icon"></i>
+                    <input type="password" id="confirm_password" placeholder="Confirm Password" required>
+                </div>
+                <button type="submit" class="login-btn">Sign Up</button>
+            </form>
+            <div class="login-footer">
+                <p>Already have an account? <a href="loggin.html">Login</a></p>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
