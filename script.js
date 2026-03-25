@@ -7,6 +7,89 @@ const academicData = [
     { code: 'EE101', name: 'Digital Electronics', credits: 4, grade: 'B', gpa: 7.5, semester: '2' }
 ];
 
+// ---------- New: 2D graph and activity status integration ----------
+function init2DGraph() {
+    const canvas = document.getElementById('activityBarChart');
+    if (!canvas || typeof Chart === 'undefined') return;
+
+    const labels = academicData.map(c => c.code);
+    const gpas = academicData.map(c => c.gpa);
+
+    new Chart(canvas.getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'GPA',
+                data: gpas,
+                backgroundColor: 'rgba(102, 126, 234, 0.8)',
+                borderColor: '#667eea',
+                borderWidth: 1,
+                borderRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return 'GPA: ' + context.parsed.y;
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: false,
+                    min: 5,
+                    max: 10
+                }
+            }
+        }
+    });
+}
+
+function initCalendar() {
+    // Calendar removed — replaced by activity status panel.
+}
+
+function initActivityStatus() {
+    const container = document.getElementById('activityStatus');
+    if (!container) return;
+
+    const activities = [
+        { title: 'Hackathon Submission', date: 'Mar 12, 2024', progress: 100, status: 'Completed' },
+        { title: 'Cloud Cert Prep', date: 'Apr 02, 2024', progress: 60, status: 'In Progress' },
+        { title: 'Project Demo', date: 'Mar 28, 2024', progress: 25, status: 'Planned' },
+        { title: 'Team Meeting', date: 'Mar 22, 2024', progress: 0, status: 'Scheduled' }
+    ];
+
+    container.innerHTML = '';
+    activities.forEach(a => {
+        const item = document.createElement('div');
+        item.className = 'status-item';
+
+        const dot = document.createElement('div');
+        dot.className = 'status-dot';
+        if (a.progress >= 100) dot.style.background = '#28a745';
+        else if (a.progress > 50) dot.style.background = '#ffb020';
+        else dot.style.background = '#e74c3c';
+
+        const content = document.createElement('div');
+        content.className = 'status-content';
+        content.innerHTML = `<div class="status-title">${a.title}</div>
+                             <div class="status-meta">${a.date} · ${a.status}</div>
+                             <div class="progress"><i style="width:${Math.min(a.progress,100)}%"></i></div>`;
+
+        item.appendChild(dot);
+        item.appendChild(content);
+        container.appendChild(item);
+    });
+}
+
 let currentFilter = 'all';
 
 // DOM Elements
@@ -18,16 +101,33 @@ const filterBtns = document.querySelectorAll('.filter-btn');
 document.addEventListener('DOMContentLoaded', function() {
     initTheme();
 
-    if(document.getElementById('academicTableBody')) {
-        initNavigation();
+    // core nav and UI
+    initNavigation();
+    initMobileMenu();
+
+    // academic table + charts
+    if (document.getElementById('academicTableBody')) {
         initFilters();
         populateAcademicTable();
         initCharts();
-        initMobileMenu();
         updateStats();
     }
-    // populate profile when on index/profile page
+
+    // enhanced features: 2D graph and activity status on dashboard
+    init2DGraph();
+    initActivityStatus();
+
+    // profile population
     populateProfile();
+
+    // mock resume generation
+    const generateResumeBtn = document.getElementById('generateResumeBtn');
+    if (generateResumeBtn) {
+        generateResumeBtn.addEventListener('click', () => {
+            alert('Compiling resume details... Opening print dialog for PDF export.');
+            window.print();
+        });
+    }
 });
 
 // Theme Manager
@@ -81,8 +181,26 @@ function initNavigation() {
             
             // Show target section
             sections.forEach(section => section.classList.remove('active'));
-            document.getElementById(targetId).classList.add('active');
+            const targetEl = document.getElementById(targetId);
+            if (targetEl) targetEl.classList.add('active');
         });
+    });
+
+    // Handle menu toggle for dropdown
+    const menuToggle = document.querySelector('.menu-toggle');
+    if (menuToggle) {
+        menuToggle.addEventListener('click', (e) => {
+            e.preventDefault();
+            const dropdown = menuToggle.closest('.dropdown');
+            if(dropdown) dropdown.classList.toggle('active');
+        });
+    }
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.dropdown')) {
+            document.querySelectorAll('.dropdown.active').forEach(d => d.classList.remove('active'));
+        }
     });
 }
 
@@ -101,6 +219,7 @@ function initMobileMenu() {
         link.addEventListener('click', () => {
             hamburger.classList.remove('active');
             navMenu.classList.remove('active');
+            document.querySelectorAll('.dropdown.active').forEach(d => d.classList.remove('active'));
         });
     });
 }
@@ -166,61 +285,48 @@ function updateStats() {
 
 // Charts
 function initCharts() {
-    // CGPA Trend Chart
-    const cgpaCtx = document.getElementById('cgpaChart').getContext('2d');
-    new Chart(cgpaCtx, {
-        type: 'line',
-        data: {
-            labels: ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4', 'Sem 5'],
-            datasets: [{
-                label: 'CGPA',
-                data: [8.2, 8.5, 8.7, 8.4, 8.6],
-                borderColor: '#667eea',
-                backgroundColor: 'rgba(102, 126, 234, 0.1)',
-                tension: 0.4,
-                fill: true
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: { display: false }
+    // Initialize charts only if their canvas elements exist
+    const cgpaEl = document.getElementById('cgpaChart');
+    if (cgpaEl && cgpaEl.getContext) {
+        const cgpaCtx = cgpaEl.getContext('2d');
+        new Chart(cgpaCtx, {
+            type: 'line',
+            data: {
+                labels: ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4', 'Sem 5'],
+                datasets: [{
+                    label: 'CGPA',
+                    data: [8.2, 8.5, 8.7, 8.4, 8.6],
+                    borderColor: '#667eea',
+                    backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
             },
-            scales: {
-                y: {
-                    beginAtZero: false,
-                    min: 7,
-                    max: 10
-                }
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: false, min: 7, max: 10 } }
             }
-        }
-    });
+        });
+    }
 
-    // Activity Chart
-    const activityCtx = document.getElementById('activityChart').getContext('2d');
-    new Chart(activityCtx, {
-        type: 'doughnut',
-        data: {
-            labels: ['Academic', 'Co-curricular', 'Sports', 'Projects'],
-            datasets: [{
-                data: [65, 20, 10, 5],
-                backgroundColor: [
-                    '#667eea',
-                    '#764ba2',
-                    '#f093fb',
-                    '#f5576c'
-                ]
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    position: 'bottom'
-                }
-            }
-        }
-    });
+    const activityEl = document.getElementById('activityChart');
+    if (activityEl && activityEl.getContext) {
+        const activityCtx = activityEl.getContext('2d');
+        new Chart(activityCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Academic', 'Co-curricular', 'Sports', 'Projects'],
+                datasets: [{
+                    data: [65, 20, 10, 5],
+                    backgroundColor: ['#667eea', '#764ba2', '#f093fb', '#f5576c']
+                }]
+            },
+            options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+        });
+    }
+
+    // Semester CGPA Trend removed — canvas and initialization deleted.
 }
 
 // Add Activity Modal (Demo)
@@ -423,9 +529,124 @@ function populateProfile() {
     profileYear.textContent = user.year ? `Year: ${user.year}` : 'Year: —';
     profileDepartment.textContent = user.department ? user.department : 'Department: —';
 
+    if (user.avatar) {
+        const avatar = document.getElementById('profileAvatar');
+        if (avatar) {
+            avatar.innerHTML = '';
+            avatar.style.background = `url('${user.avatar}') center/cover`;
+        }
+    }
+
     // Use values from dashboard if available
     const cgpaEl = document.getElementById('cgpa');
     const creditsEl = document.getElementById('credits');
     profileCGPA.textContent = cgpaEl ? cgpaEl.textContent : '—';
     profileCredits.textContent = creditsEl ? creditsEl.textContent : '—';
 }
+
+// Profile UI helpers
+function wireProfileActions() {
+    const editBtn = document.getElementById('editProfileBtn');
+    const changeAvatarBtn = document.getElementById('changeAvatarBtn');
+    const settingsBtn = document.getElementById('settingsBtn');
+    const editPanel = document.getElementById('editProfilePanel');
+    const saveBtn = document.getElementById('saveProfileBtn');
+    const cancelBtn = document.getElementById('cancelEditBtn');
+
+    if (editBtn) {
+        editBtn.addEventListener('click', () => {
+            if (!editPanel) return;
+            // populate fields
+            const userJson = localStorage.getItem('user');
+            const user = userJson ? JSON.parse(userJson) : {};
+            document.getElementById('inputFullname').value = user.fullname || '';
+            document.getElementById('inputStudentId').value = user.studentid || '';
+            document.getElementById('inputEmail').value = user.email || '';
+            editPanel.classList.remove('hidden');
+        });
+    }
+
+    if (cancelBtn) cancelBtn.addEventListener('click', () => document.getElementById('editProfilePanel').classList.add('hidden'));
+
+    if (saveBtn) saveBtn.addEventListener('click', () => {
+        const fullname = document.getElementById('inputFullname').value.trim();
+        const studentid = document.getElementById('inputStudentId').value.trim();
+        const email = document.getElementById('inputEmail').value.trim();
+        const userJson = localStorage.getItem('user');
+        const user = userJson ? JSON.parse(userJson) : {};
+        user.fullname = fullname || user.fullname;
+        user.studentid = studentid || user.studentid;
+        user.email = email || user.email;
+        localStorage.setItem('user', JSON.stringify(user));
+        populateProfile();
+        document.getElementById('editProfilePanel').classList.add('hidden');
+    });
+
+    if (changeAvatarBtn) {
+        const avatarInput = document.getElementById('avatarInput');
+        if (avatarInput) {
+            changeAvatarBtn.addEventListener('click', () => avatarInput.click());
+            
+            avatarInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (ev) => {
+                        const avatar = document.getElementById('profileAvatar');
+                        avatar.innerHTML = '';
+                        avatar.style.background = `url('${ev.target.result}') center/cover`;
+                        
+                        const userJson = localStorage.getItem('user');
+                        const user = userJson ? JSON.parse(userJson) : {};
+                        user.avatar = ev.target.result;
+                        localStorage.setItem('user', JSON.stringify(user));
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+    }
+
+    if (settingsBtn) settingsBtn.addEventListener('click', () => alert('Settings panel placeholder — implement as needed.'));
+}
+
+function initScreenshotUpload() {
+    const uploadBtn = document.getElementById('uploadScreenshotBtn');
+    const screenshotInput = document.getElementById('screenshotInput');
+    
+    if (uploadBtn && screenshotInput) {
+        uploadBtn.addEventListener('click', () => screenshotInput.click());
+        
+        screenshotInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    const grid = document.querySelector('.activities-grid');
+                    if (grid) {
+                        const card = document.createElement('div');
+                        card.className = 'activity-card';
+                        card.style.animation = 'fadeIn 0.5s ease-in';
+                        card.innerHTML = `
+                            <div style="width: 100%; height: 160px; border-radius: 10px; margin-bottom: 1rem; background: url('${ev.target.result}') center/cover; box-shadow: 0 4px 10px rgba(0,0,0,0.2);"></div>
+                            <h3>Uploaded Screenshot</h3>
+                            <p>User submission</p>
+                            <span class="activity-date">${new Date().toLocaleString('default', { month: 'short', year: 'numeric' })}</span>
+                        `;
+                        grid.appendChild(card);
+                    }
+                    screenshotInput.value = ''; // Reset
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+}
+
+// wire profile interactions after content loaded
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+        wireProfileActions();
+        initScreenshotUpload();
+    }, 200);
+});

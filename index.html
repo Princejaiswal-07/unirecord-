@@ -1,26 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <title>Astraverse</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UniRecord - Centralized Academic & Co-curricular System</title>
+    <title>Astraverse — Stylish Dashboard</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
+
 <body>
-    <!-- Header -->
     <header class="header">
         <nav class="navbar">
             <div class="nav-brand">
-                <i class="fas fa-graduation-cap"></i>
-                <span>UniRecord</span>
+                <i class="fas fa-rocket"></i>
+                <span>Astraverse</span>
             </div>
             <ul class="nav-menu">
                 <li><a href="#dashboard" class="nav-link active">Dashboard</a></li>
-                <li><a href="#academic" class="nav-link">Academic</a></li>
-                <li><a href="#cocurricular" class="nav-link">Co-curricular</a></li>
-                <li><a href="#profile" class="nav-link">Profile</a></li>
-                <li><a href="loggin.html" class="nav-link"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                <li class="dropdown">
+                    <a href="#" class="menu-toggle">Menu <i class="fas fa-caret-down"></i></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#academic" class="nav-link">Academic</a></li>
+                        <li><a href="#cocurricular" class="nav-link">Activities</a></li>
+                        <li><a href="#attendance" class="nav-link">Attendance</a></li>
+                        <li><a href="#resume" class="nav-link">Resume Generator</a></li>
+                        <li><a href="#profile" class="nav-link">Profile</a></li>
+                    </ul>
+                </li>
+                <li><a href="loggin.html" class="nav-link"><i class="fas fa-sign-out-alt"></i></a></li>
                 <li><button class="theme-toggle" id="themeToggle" title="Toggle Theme"><i class="fas fa-moon"></i></button></li>
             </ul>
             <div class="hamburger">
@@ -31,57 +39,61 @@
         </nav>
     </header>
 
-    <!-- Main Content -->
     <main class="main-content">
-        <!-- Dashboard Section -->
         <section id="dashboard" class="section active">
-            <div class="container">
-                <h1>Welcome to Your Academic Dashboard</h1>
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <i class="fas fa-book"></i>
-                        <div>
-                            <h3 id="total-courses">6</h3>
-                            <p>Total Courses</p>
-                        </div>
+            <div class="container grid-dashboard">
+                <div class="left-panel card">
+                    <h2 class="panel-title">Activity Graph</h2>
+                    <div class="graph-wrap">
+                        <canvas id="activityBarChart"></canvas>
                     </div>
-                    <div class="stat-card">
-                        <i class="fas fa-star"></i>
-                        <div>
-                            <h3 id="cgpa">8.5</h3>
-                            <p>CGPA</p>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <i class="fas fa-trophy"></i>
-                        <div>
-                            <h3 id="achievements">12</h3>
-                            <p>Achievements</p>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <i class="fas fa-calendar-check"></i>
-                        <div>
-                            <h3 id="credits">120</h3>
-                            <p>Total Credits</p>
-                        </div>
-                    </div>
+                    <p class="muted">Simple 2D activity visualization.</p>
                 </div>
 
-                <div class="dashboard-charts">
-                    <div class="chart-card">
-                        <h3>CGPA Trend</h3>
-                        <canvas id="cgpaChart"></canvas>
+                <div class="right-panel card">
+                    <h2 class="panel-title">Activity Status</h2>
+                    <div id="activityStatus"></div>
+                </div>
+
+                <div class="wide-panel card full-width">
+                    <h2 class="panel-title">Quick Stats</h2>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <i class="fas fa-book"></i>
+                            <div>
+                                <h3 id="total-courses">6</h3>
+                                <p>Total Courses</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-star"></i>
+                            <div>
+                                <h3 id="cgpa">8.5</h3>
+                                <p>CGPA</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-trophy"></i>
+                            <div>
+                                <h3 id="achievements">12</h3>
+                                <p>Achievements</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-calendar-check"></i>
+                            <div>
+                                <h3 id="credits">120</h3>
+                                <p>Total Credits</p>
+                            </div>
+                        </div>
                     </div>
-                    <div class="chart-card">
-                        <h3>Activity Overview</h3>
-                        <canvas id="activityChart"></canvas>
+                    <div class="chart-card" style="margin-top:1.5rem;">
+                        <!-- Semester CGPA Trend removed per request -->
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Academic Records Section -->
         <section id="academic" class="section">
             <div class="container">
                 <h1>Academic Records</h1>
@@ -97,20 +109,12 @@
                                 <th>Semester</th>
                             </tr>
                         </thead>
-                        <tbody id="academicTableBody">
-                            <!-- Data populated by JS -->
-                        </tbody>
+                        <tbody id="academicTableBody"></tbody>
                     </table>
-                </div>
-                <div class="semester-filter">
-                    <button class="filter-btn active" data-semester="all">All Semesters</button>
-                    <button class="filter-btn" data-semester="1">Semester 1</button>
-                    <button class="filter-btn" data-semester="2">Semester 2</button>
                 </div>
             </div>
         </section>
 
-        <!-- Co-curricular Section -->
         <section id="cocurricular" class="section">
             <div class="container">
                 <h1>Co-curricular Activities</h1>
@@ -127,50 +131,122 @@
                         <p>Google Cloud Developer</p>
                         <span class="activity-date">Feb 2024</span>
                     </div>
-                    <div class="activity-card">
-                        <i class="fas fa-medal"></i>
-                        <h3>Sports Achievement</h3>
-                        <p>Cricket Tournament MVP</p>
-                        <span class="activity-date">Jan 2024</span>
-                    </div>
                 </div>
-                <button class="add-activity-btn">+ Add New Activity</button>
+                <div class="activity-actions" style="display: flex; gap: 1rem; justify-content: center; margin-top: 2rem;">
+                    <button class="add-activity-btn">+ Add New Activity</button>
+                    <button class="add-activity-btn" id="uploadScreenshotBtn" style="background: var(--secondary-color);">Upload Screenshot</button>
+                    <input type="file" id="screenshotInput" accept="image/*" class="hidden">
+                </div>
             </div>
         </section>
 
-        <!-- Profile Section -->
-        <section id="profile" class="section">
+        <section id="attendance" class="section">
             <div class="container">
-                <div class="profile-header">
-                    <div class="profile-avatar">
-                        <i class="fas fa-user"></i>
+                <h1>Attendance Tracking</h1>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <i class="fas fa-check-circle" style="color: #28a745;"></i>
+                        <div>
+                            <h3>45</h3>
+                            <p>Total Present</p>
+                        </div>
                     </div>
-                    <div class="profile-info">
-                        <h1 id="profileName">—</h1>
-                        <p id="profileBadge">Student ID: —</p>
-                        <div class="profile-stats">
-                            <span id="profileYear">Year: —</span>
-                            <span id="profileDepartment">Department: —</span>
+                    <div class="stat-card">
+                        <i class="fas fa-times-circle" style="color: #e74c3c;"></i>
+                        <div>
+                            <h3>5</h3>
+                            <p>Total Absent</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-percent" style="color: #00d2ff;"></i>
+                        <div>
+                            <h3>90%</h3>
+                            <p>Overall Attendance</p>
                         </div>
                     </div>
                 </div>
-                <div class="profile-details">
-                    <div class="detail-card">
-                        <h3>Contact Information</h3>
-                        <p><i class="fas fa-envelope"></i> <span id="profileEmail">—</span></p>
-                        <p><i class="fas fa-phone"></i> <span id="profilePhone">—</span></p>
+                
+                <div class="table-container" style="margin-top: 2rem;">
+                    <table class="records-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Subject</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>25 Mar 2026</td>
+                                <td>Data Structures</td>
+                                <td><span style="color:#28a745; font-weight:bold;">Present</span></td>
+                            </tr>
+                            <tr>
+                                <td>24 Mar 2026</td>
+                                <td>Physics I</td>
+                                <td><span style="color:#e74c3c; font-weight:bold;">Absent</span></td>
+                            </tr>
+                            <tr>
+                                <td>23 Mar 2026</td>
+                                <td>Linear Algebra</td>
+                                <td><span style="color:#28a745; font-weight:bold;">Present</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section id="resume" class="section">
+            <div class="container">
+                <h1>Resume Generator</h1>
+                <div class="card" style="text-align: center; padding: 4rem 2rem;">
+                    <i class="fas fa-file-alt" style="font-size: 5rem; color: var(--primary-color); margin-bottom: 2rem;"></i>
+                    <h2 style="color: var(--text-primary); margin-bottom: 1rem;">Generate Your Professional Resume</h2>
+                    <p class="muted" style="margin-bottom: 2rem;">Automatically compile your profile details, academic records, and co-curricular activities into a sleek, professional PDF resume.</p>
+                    <button id="generateResumeBtn" class="add-activity-btn" style="padding: 1rem 3rem; font-size: 1.2rem;">
+                        <i class="fas fa-download"></i> Download Resume PDF
+                    </button>
+                    <div id="resumePreview" style="margin-top: 3rem; padding: 2rem; background: var(--card-bg-solid); border: 1px solid var(--border-color); border-radius: 12px; display: none; text-align: left; color: #333;">
+                        <!-- Resume content injected via JS dynamically -->
                     </div>
-                    <div class="detail-card">
-                        <h3>Academic Summary</h3>
-                        <p>CGPA: <strong id="profileCGPA">—</strong></p>
-                        <p>Total Credits: <strong id="profileCredits">—</strong></p>
+                </div>
+            </div>
+        </section>
+
+        <section id="profile" class="section">
+            <div class="container">
+                <h1>Profile</h1>
+                <div class="profile-header">
+                    <div class="profile-avatar" id="profileAvatar"><i class="fas fa-user"></i></div>
+                    <div class="profile-info">
+                        <h1 id="profileName">—</h1>
+                        <p id="profileBadge">Student ID: —</p>
+                        <div class="profile-actions">
+                            <button id="editProfileBtn" class="btn">Edit Profile</button>
+                            <button id="changeAvatarBtn" class="btn">Change Avatar</button>
+                            <input type="file" id="avatarInput" accept="image/*" class="hidden">
+                            <button id="settingsBtn" class="btn ghost">Settings</button>
+                            <a href="loggin.html" class="btn danger">Logout</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="editProfilePanel" class="edit-panel hidden">
+                    <label>Full name <input id="inputFullname" type="text"></label>
+                    <label>Student ID <input id="inputStudentId" type="text"></label>
+                    <label>Email <input id="inputEmail" type="email"></label>
+                    <div class="edit-actions">
+                        <button id="saveProfileBtn" class="btn">Save</button>
+                        <button id="cancelEditBtn" class="btn ghost">Cancel</button>
                     </div>
                 </div>
             </div>
         </section>
     </main>
 
-    <!-- Scripts -->
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="script.js"></script>
 </body>
